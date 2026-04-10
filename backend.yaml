@@ -49,4 +49,4 @@ spec:
       resources:
         requests:
           storage: 2Gi 
-      storageClassName: suji-storage
+      storageClassName: "suji-storage"

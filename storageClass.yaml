@@ -3,6 +3,6 @@ kind: StorageClass
 metadata:
   name: suji-storage
 provisioners: nfs.csi.k8s.io
-parametes:
+parameters:
   share: /var/nfs/general/suji 
   server: 10.0.8.33

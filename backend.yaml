@@ -11,9 +11,10 @@ spec:
       apps: sujithas 
   template:
     metadata:
-      apps: sujithas 
+      labels:
+        apps: sujithas 
     spec:
-      terminationGracePeriodSecond: 10
+      terminationGracePeriodSeconds: 10
       containers:
         - name: backend-cont 
           image: mongo 

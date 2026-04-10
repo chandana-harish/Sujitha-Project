@@ -38,4 +38,15 @@ spec:
                 secretKeyRef:
                   name: suji-secret 
                   key: PORT
-              
+          volumeMounts:
+            - name: my-storage
+              mountPath: /data/db
+  volumeClaimTemplates:
+    metadata:
+      - name: my-storage 
+    spec:
+      accessModes: ["ReadWriteMany"]
+      resources:
+        requests:
+          storage: 2Gi 
+      storageClassName: suji-storage

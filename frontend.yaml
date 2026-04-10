@@ -1,0 +1,44 @@
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: frontend-deployment 
+  namespace: suji
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate 
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: sujitha 
+  template:
+    spec:
+      containers:
+        - name: frontend-cont 
+          image: chandu554/sujithanew1:v1.1.0
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "200Mi"
+            limits:
+              cpu: "300m"
+              memory: "400Mi"
+          env:
+            - name: MONGO_URI 
+              valueFrom: 
+                secretKeyRef:
+                  name: suji-secret 
+                  key: MONGO_URI 
+            - name: PORT
+              valueFrom: 
+                secretKeyRef:
+                  name: suji-secret 
+                  key: PORT
+            
+                  
+                
+            

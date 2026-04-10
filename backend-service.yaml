@@ -9,5 +9,5 @@ spec:
   ports:
     - targetPort: 27017
       port: 27017
-  type: ClsuterIP 
+  type: ClusterIP 
   clusterIP: None 

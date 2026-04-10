@@ -14,6 +14,9 @@ spec:
     matchLabels:
       app: sujitha 
   template:
+    metadata:
+      labels: 
+        app: sujitha 
     spec:
       containers:
         - name: frontend-cont 

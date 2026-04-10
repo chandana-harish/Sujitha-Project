@@ -1,49 +1,50 @@
 name: Build
- 
+
 on:
   push:
     branches:
       - master
- 
- 
+
 jobs:
   build:
-    name: Build and analyze
+    name: Build and Analyze
     runs-on: ubuntu-latest
-   
+
     steps:
-      - uses: actions/checkout@v4
+      # 1. Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          #CHECKING DEPENDENCY CHECK USING SNYK
-      - name: Snyk Initialize Backend
-        uses: snyk/actions/node@master
+          fetch-depth: 0
+
+      # 2. Install Dependencies (ASSUMES package.json IN ROOT)
+      - name: Install Dependencies
+        run: npm install
+
+      # 3. Snyk Dependency Vulnerability Scan
+      - name: Snyk Security Scan
+        uses: snyk/actions/node@v1
+        with:
+          command: test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor
-          args: --file=backend/package.json
 
-      - uses: SonarSource/sonarqube-scan-action@v6
+      # 4. SonarQube Code Quality Scan
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
-         #QUALITY GATE CHECK 
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # 5. SonarQube Quality Gate Check
       - name: SonarQube Quality Gate Check
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
- 
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # - name: Quality Gate Check
-      #   uses: SonarSource/sonarqube-quality-gate-action@v1
-      #   id: qualitygate
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # 6. Success Email Notification
       - name: Send Success Email
         if: success()
         uses: dawidd6/action-send-mail@v3
@@ -53,9 +54,11 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "Build Passed"
-          body: "No vulnerabilities found."
+          body: "No vulnerabilities found. Quality Gate Passed."
           to: ${{ secrets.EMAIL_USERNAME }}
           from: GitHub Actions
+
+      # 7. Failure Email Notification
       - name: Send Failure Email
         if: failure()
         uses: dawidd6/action-send-mail@v3
@@ -65,9 +68,6 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "Build Failed"
-          body: "Quality Gate failed. Check SonarQube."
+          body: "Pipeline failed. Check Snyk or SonarQube reports."
           to: ${{ secrets.EMAIL_USERNAME }}
           from: GitHub Actions
-      
-   
- 

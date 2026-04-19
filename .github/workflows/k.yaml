@@ -1,0 +1,38 @@
+name: Build 
+
+on:
+  push:
+    branches:
+      - master 
+
+
+jobs:
+  build:
+    name: build and analyse 
+    runs-on: ubuntu-latest 
+    steps:
+      - uses: actions/checkout@v4 
+        with: 
+          fetch-depth: 0
+            
+      - name: synk 
+        uses: snyk/actions/checkout@v1 
+        env: 
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with: 
+          command: monitor 
+          args: --file=package*.json 
+      
+
+      - uses: SonarSource/sonarqube-actions@v6 
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: sonAR QUALITY GATE CHECK 
+        uses: SonarSource/sonarqube-quality-gate-actions@v1
+        timeoutSeconds: 5 
+        env: 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          
+

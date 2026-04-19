@@ -10,11 +10,13 @@ jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
-   
+             
     steps:
+    #cloning 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          #dependency check 
       - name: Snyk Initialize Backend
         uses: snyk/actions/node@master
         env:
@@ -22,12 +24,12 @@ jobs:
         with:
           command: monitor
           args: --file=package.json
-
+           #code quality 
       - uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
-
+             #quality gate check 
       - name: SonarQube Quality Gate Check
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
